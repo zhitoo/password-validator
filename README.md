@@ -20,17 +20,17 @@ $validateInputs = $request->validate([
         ]);
 ```
 - 1 password must at least has 6 chars
-- 2 1 and at least has one a-z chars
-- 3 2 and at least has one A-Z 
-- 4 3 and at least has one 0-9
-- 5 4 and at least has one special chars like @ $ ! % * # ? &
+- 2 1 and at least has one a-z chars or lowercase
+- 3 2 and at least has one A-Z       or lowercase-uppercase  
+- 4 3 and at least has one 0-9       or lowercase-uppercase-number
+- 5 4 and at least has one special chars like @ $ ! % * # ? & or lowercase-uppercase-number-symbol
 
-by default password length is 6 but you can set it.
+by default password length is 6 but you can change it.
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
             'name' => 'required|string',
-            'password' => 'required|confirmed|min:6|password_strength:8'//password length at least 8
+            'password' => 'required|confirmed|min:6|password_strength:,8'//password length at least 8
         ]);
 ```
 
@@ -41,5 +41,21 @@ $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
             'name' => 'required|string',
             'password' => 'required|confirmed|min:6|password_strength:4,8'//first is strong and second is password length
+        ]);
+```
+
+if you want use only special characters or only uppercase
+```
+$validateInputs = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'name' => 'required|string',
+            'password' => 'required|confirmed|min:6|password_strength:uppercase,8'//first is strong and second is password length
+        ]);
+```
+```
+$validateInputs = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'name' => 'required|string',
+            'password' => 'required|confirmed|min:6|password_strength:symbol-uppercase,8'//first is strong and second is password length
         ]);
 ```

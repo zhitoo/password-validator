@@ -25,33 +25,56 @@ class PasswordValidator extends Validator
      */
     public function validatePasswordStrength($attribute, $value, $parameters, $validator)
     {
-        $strong = 1;
-        if (isset($parameters[0])) {
-            $strong = intval($parameters[0]);
-            if ($strong > 6) {
-                $this->passwordLength = $strong;
+        $paramOne = $parameters[0] ?? 5;
+        if (is_numeric($paramOne)) {
+            $paramOne = intval($paramOne);
+            switch ($paramOne) {
+                case 1:
+                    $paramOne = '';//length only
+                    break;
+                case 2:
+                    $paramOne = 'lowercase';
+                    break;
+                case 3:
+                    $paramOne = 'lowercase-uppercase';
+                    break;
+                case 4:
+                    $paramOne = 'lowercase-uppercase-number';
+                    break;
+                default:
+                    $paramOne = 'lowercase-uppercase-number-symbol';
+                    break;
             }
         }
-        if (isset($parameters[1])) {
+        if (isset($parameters[1]) and is_numeric($parameters[1])) {
             $this->passwordLength = intval($parameters[1]);
         }
-        switch ($strong) {
-            case 1:
-                $result = $this->strongOne($value);
-                break;
-            case 2:
-                $result = $this->strongTwo($value);
-                break;
-            case 3:
-                $result = $this->strongThree($value);
-                break;
-            case 4:
-                $result = $this->strongFour($value);
-                break;
-            default:
-                $result = $this->strongFive($value);
-                break;
+        $parts = explode('-', $paramOne);
+
+        //length is base validation and check always
+        $result = $this->checkLength($value);
+        $this->createMessage($result, ' have 8 characters at least', '');
+        if (in_array('uppercase', $parts)) {
+            $uppercaseResult = $this->checkExistsUppercaseLetters($value);
+            $this->createMessage($uppercaseResult, '  one A-Z characters');
+            $result = $result && $uppercaseResult;
         }
+        if (in_array('lowercase', $parts)) {
+            $lowercaseResult = $this->checkExistsLowercaseLetters($value);
+            $this->createMessage($lowercaseResult, '  one a-z characters');
+            $result = $result && $lowercaseResult;
+        }
+        if (in_array('number', $parts)) {
+            $numberResult = $this->checkExistsNumbers($value);
+            $this->createMessage($numberResult, '  one 0-9 characters');
+            $result = $result && $numberResult;
+        }
+        if (in_array('symbol', $parts)) {
+            $symbolResult = $this->checkExistsSpecialCharacters($value);
+            $this->createMessage($symbolResult, '  one special characters exp: @$!%*#?&');
+            $result = $result && $symbolResult;
+        }
+
         $validationMessages['password_strength'] = 'password must: ' . $this->password_strength_message;
         $this->setCustomMessages($validationMessages);
         return $result;
@@ -64,45 +87,6 @@ class PasswordValidator extends Validator
             if (empty($this->password_strength_message)) $this->password_strength_message .= $prefix;
             $this->password_strength_message .= $message;
         }
-    }
-
-    private function strongOne($value): bool
-    {
-        $result = $this->checkLength($value);
-        $this->createMessage($result, ' have 8 characters at least', '');
-        return $result;
-    }
-
-    private function strongTwo($value): bool
-    {
-        $result = $this->checkExistsLowercaseLetters($value);
-        $pervResult = $this->strongOne($value);
-        $this->createMessage($result, '  one a-z characters');
-        return $result and $pervResult;
-    }
-
-    private function strongThree($value): bool
-    {
-        $result = $this->checkExistsUppercaseLetters($value);
-        $pervResult = $this->strongTwo($value);
-        $this->createMessage($result, '  one A-Z characters');
-        return $result and $pervResult;
-    }
-
-    private function strongFour($value): bool
-    {
-        $result = $this->checkExistsNumbers($value);
-        $pervResult = $this->strongThree($value);
-        $this->createMessage($result, '  one 0-9 characters');
-        return $result and $pervResult;
-    }
-
-    private function strongFive($value): bool
-    {
-        $result = $this->checkExistsSpecialCharacters($value);
-        $pervResult = $this->strongFour($value);
-        $this->createMessage($result, '  one special character exp: @$!%*#?&');
-        return $result and $pervResult;
     }
 
     private function checkLength($value): bool
