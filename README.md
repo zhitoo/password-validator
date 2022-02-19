@@ -1,6 +1,9 @@
 # password-validator
 password validator tools for laravel
 ```
+composer require hshafiei374/password-validator
+```
+```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
             'name' => 'required|string',
