@@ -10,7 +10,7 @@ composer require hshafiei374/password-validator
 - have_number
 - have_symbol
 
-##have_strength
+## have_strength
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -52,7 +52,7 @@ $validateInputs = $request->validate([
         ]);
 ```
 
-###if you want use only special characters or only uppercase ...
+### if you want use only special characters or only uppercase ...
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -68,8 +68,8 @@ $validateInputs = $request->validate([
         ]);
 ```
 
-###you can use each rule separately:
-##have_number
+### you can use each rule separately:
+## have_number
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -85,7 +85,7 @@ $validateInputs = $request->validate([
             'password' => 'required|confirmed|min:6|have_symbol'//password must have 1 special character
         ]);
 ```
-##have_uppercase
+## have_uppercase
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
