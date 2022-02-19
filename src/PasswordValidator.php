@@ -14,6 +14,27 @@ class PasswordValidator extends Validator
         parent::__construct($translator, $data, $rules, $messages, $customAttributes);
     }
 
+
+    public function validateHaveNumber($attribute, $value, $parameters, $validator)
+    {
+        return $this->checkExistsNumbers($value)>($parameters[0]??1);
+    }
+
+    public function validateHaveUppercase($attribute, $value, $parameters, $validator)
+    {
+        return $this->checkExistsUppercaseLetters($value)>($parameters[0]??1);
+    }
+
+    public function validateHaveLowercase($attribute, $value, $parameters, $validator)
+    {
+        return $this->checkExistsLowercaseLetters($value)>($parameters[0]??1);
+    }
+
+    public function validateHaveSymbol($attribute, $value, $parameters, $validator)
+    {
+        return $this->checkExistsSpecialCharacters($value)>($parameters[0]??1);
+    }
+
     /**
      * Validate password strong.
      *
@@ -23,7 +44,7 @@ class PasswordValidator extends Validator
      * @param \Illuminate\Validation\Validator $validator
      * @return bool
      */
-    public function validatePasswordStrength($attribute, $value, $parameters, $validator)
+    public function validateHaveStrength($attribute, $value, $parameters, $validator)
     {
         $paramOne = $parameters[0] ?? 5;
         if (is_numeric($paramOne)) {
@@ -53,29 +74,29 @@ class PasswordValidator extends Validator
 
         //length is base validation and check always
         $result = $this->checkLength($value);
-        $this->createMessage($result, ' have '.$this->passwordLength.' characters at least', '');
+        $this->createMessage($result, ' have ' . $this->passwordLength . ' characters at least', '');
         if (in_array('uppercase', $parts)) {
-            $uppercaseResult = $this->checkExistsUppercaseLetters($value);
+            $uppercaseResult = $this->checkExistsUppercaseLetters($value) > 0;
             $this->createMessage($uppercaseResult, '  one A-Z characters');
             $result = $result && $uppercaseResult;
         }
         if (in_array('lowercase', $parts)) {
-            $lowercaseResult = $this->checkExistsLowercaseLetters($value);
+            $lowercaseResult = $this->checkExistsLowercaseLetters($value) > 0;
             $this->createMessage($lowercaseResult, '  one a-z characters');
             $result = $result && $lowercaseResult;
         }
         if (in_array('number', $parts)) {
-            $numberResult = $this->checkExistsNumbers($value);
+            $numberResult = $this->checkExistsNumbers($value) > 0;
             $this->createMessage($numberResult, '  one 0-9 characters');
             $result = $result && $numberResult;
         }
         if (in_array('symbol', $parts)) {
-            $symbolResult = $this->checkExistsSpecialCharacters($value);
+            $symbolResult = $this->checkExistsSpecialCharacters($value) > 0;
             $this->createMessage($symbolResult, '  one special characters exp: @$!%*#?&');
             $result = $result && $symbolResult;
         }
 
-        $validationMessages['password_strength'] = 'password must: ' . $this->password_strength_message;
+        $validationMessages['have_strength'] = 'password must: ' . $this->password_strength_message;
         $this->setCustomMessages($validationMessages);
         return $result;
 
@@ -94,23 +115,23 @@ class PasswordValidator extends Validator
         return strlen($value) >= $this->passwordLength;
     }
 
-    private function checkExistsLowercaseLetters($value): bool
+    private function checkExistsLowercaseLetters($value): int
     {
-        return preg_match("/[a-z]/u", $value);
+        return preg_match_all("/[a-z]/u", $value);
     }
 
-    private function checkExistsUppercaseLetters($value): bool
+    private function checkExistsUppercaseLetters($value): int
     {
-        return preg_match("/[A-Z]/u", $value);
+        return preg_match_all("/[A-Z]/u", $value);
     }
 
-    private function checkExistsNumbers($value): bool
+    private function checkExistsNumbers($value): int
     {
-        return preg_match("/[0-9]/u", $value);
+        return preg_match_all("/[0-9]/u", $value);
     }
 
-    private function checkExistsSpecialCharacters($value): bool
+    private function checkExistsSpecialCharacters($value): int
     {
-        return preg_match('/\p{Z}|\p{S}|\p{P}/u', $value);
+        return preg_match_all('/\p{Z}|\p{S}|\p{P}/u', $value);
     }
 }
