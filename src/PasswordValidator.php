@@ -6,14 +6,12 @@ use Illuminate\Validation\Validator;
 
 class PasswordValidator extends Validator
 {
-    public $validationMessages = [
-        'password_strength' => 'password so weak',
-    ];
+    private $passwordLength = 6;
+    public $password_strength_message;
 
     public function __construct($translator, $data, $rules, $messages = [], $customAttributes = [])
     {
         parent::__construct($translator, $data, $rules, $messages, $customAttributes);
-        $this->setCustomMessages($this->validationMessages);
     }
 
     /**
@@ -30,44 +28,80 @@ class PasswordValidator extends Validator
         $strong = 1;
         if (isset($parameters[0])) {
             $strong = intval($parameters[0]);
+            if ($strong > 6) {
+                $this->passwordLength = $strong;
+            }
         }
-
+        if (isset($parameters[1])) {
+            $this->passwordLength = intval($parameters[1]);
+        }
         switch ($strong) {
             case 1:
-                return $this->strongOne($value);
+                $result = $this->strongOne($value);
+                break;
             case 2:
-                return $this->strongTwo($value);
+                $result = $this->strongTwo($value);
+                break;
             case 3:
-                return $this->strongThree($value);
+                $result = $this->strongThree($value);
+                break;
             case 4:
-                return $this->strongFour($value);
+                $result = $this->strongFour($value);
+                break;
             default:
-                return $this->strongFive($value);
+                $result = $this->strongFive($value);
+                break;
+        }
+        $validationMessages['password_strength'] = 'password must: ' . $this->password_strength_message;
+        $this->setCustomMessages($validationMessages);
+        return $result;
+
+    }
+
+    private function createMessage($result, string $message, string $prefix = ' have at least'): void
+    {
+        if (!$result) {
+            if (empty($this->password_strength_message)) $this->password_strength_message .= $prefix;
+            $this->password_strength_message .= $message;
         }
     }
 
     private function strongOne($value): bool
     {
-        return strlen($value) >= 6;
+        $result = strlen($value) >= $this->passwordLength;
+        $this->createMessage($result, ' have 8 characters at least', '');
+        return $result;
     }
 
     private function strongTwo($value): bool
     {
-        return $this->strongOne($value) and preg_match("/[a-z]/", $value);
+        $result = preg_match("/[a-z]/", $value);
+        $pervResult = $this->strongOne($value);
+        $this->createMessage($result, '  one a-z characters');
+        return $result and $pervResult;
     }
 
     private function strongThree($value): bool
     {
-        return $this->strongTwo($value) and preg_match("/[A-Z]/", $value);
+        $result = preg_match("/[A-Z]/", $value);
+        $pervResult = $this->strongTwo($value);
+        $this->createMessage($result, '  one A-Z characters');
+        return $result and $pervResult;
     }
 
     private function strongFour($value): bool
     {
-        return $this->strongThree($value) and preg_match("/[0-9]/", $value);
+        $result = preg_match("/[0-9]/", $value);
+        $pervResult = $this->strongThree($value);
+        $this->createMessage($result, '  one 0-9 characters');
+        return $result and $pervResult;
     }
 
     private function strongFive($value): bool
     {
-        return $this->strongFour($value) and preg_match("/[@$!%*#?&]/", $value);
+        $result = preg_match("/[@$!%*#?&]/", $value);
+        $pervResult = $this->strongFour($value);
+        $this->createMessage($result, '  one special character exp: @$!%*#?&');
+        return $result and $pervResult;
     }
 }
