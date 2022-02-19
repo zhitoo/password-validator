@@ -68,14 +68,14 @@ class PasswordValidator extends Validator
 
     private function strongOne($value): bool
     {
-        $result = strlen($value) >= $this->passwordLength;
+        $result = $this->checkLength($value);
         $this->createMessage($result, ' have 8 characters at least', '');
         return $result;
     }
 
     private function strongTwo($value): bool
     {
-        $result = preg_match("/[a-z]/", $value);
+        $result = $this->checkExistsLowercaseLetters($value);
         $pervResult = $this->strongOne($value);
         $this->createMessage($result, '  one a-z characters');
         return $result and $pervResult;
@@ -83,7 +83,7 @@ class PasswordValidator extends Validator
 
     private function strongThree($value): bool
     {
-        $result = preg_match("/[A-Z]/", $value);
+        $result = $this->checkExistsUppercaseLetters($value);
         $pervResult = $this->strongTwo($value);
         $this->createMessage($result, '  one A-Z characters');
         return $result and $pervResult;
@@ -91,7 +91,7 @@ class PasswordValidator extends Validator
 
     private function strongFour($value): bool
     {
-        $result = preg_match("/[0-9]/", $value);
+        $result = $this->checkExistsNumbers($value);
         $pervResult = $this->strongThree($value);
         $this->createMessage($result, '  one 0-9 characters');
         return $result and $pervResult;
@@ -99,9 +99,34 @@ class PasswordValidator extends Validator
 
     private function strongFive($value): bool
     {
-        $result = preg_match("/[@$!%*#?&]/", $value);
+        $result = $this->checkExistsSpecialCharacters($value);
         $pervResult = $this->strongFour($value);
         $this->createMessage($result, '  one special character exp: @$!%*#?&');
         return $result and $pervResult;
+    }
+
+    private function checkLength($value): bool
+    {
+        return strlen($value) >= $this->passwordLength;
+    }
+
+    private function checkExistsLowercaseLetters($value): bool
+    {
+        return preg_match("/[a-z]/", $value);
+    }
+
+    private function checkExistsUppercaseLetters($value): bool
+    {
+        return preg_match("/[A-Z]/", $value);
+    }
+
+    private function checkExistsNumbers($value): bool
+    {
+        return preg_match("/[0-9]/", $value);
+    }
+
+    private function checkExistsSpecialCharacters($value): bool
+    {
+        return preg_match("/[@$!%*#?&]/", $value);
     }
 }
