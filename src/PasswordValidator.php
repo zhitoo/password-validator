@@ -112,21 +112,21 @@ class PasswordValidator extends Validator
 
     private function checkExistsLowercaseLetters($value): bool
     {
-        return preg_match("/[a-z]/", $value);
+        return preg_match("/[a-z]/u", $value);
     }
 
     private function checkExistsUppercaseLetters($value): bool
     {
-        return preg_match("/[A-Z]/", $value);
+        return preg_match("/[A-Z]/u", $value);
     }
 
     private function checkExistsNumbers($value): bool
     {
-        return preg_match("/[0-9]/", $value);
+        return preg_match("/[0-9]/u", $value);
     }
 
     private function checkExistsSpecialCharacters($value): bool
     {
-        return preg_match("/[@$!%*#?&]/", $value);
+        return preg_match('/\p{Z}|\p{S}|\p{P}/u', $value);
     }
 }
