@@ -1,0 +1,27 @@
+{
+    "name": "hshafiei374/password-validator",
+    "description": "Laravel password validator package",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hshafiei374\\PasswordValidator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hossein Shafiei",
+            "email": "hshafiei374@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2|^7.4|^8.0",
+        "illuminate/support": "^6.9|^7.0|^8.0|^9.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Hshafiei374\\PasswordValidator\\PasswordValidatorServiceProvider"
+            ]
+        }
+    }
+}
