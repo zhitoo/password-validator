@@ -1,8 +1,16 @@
 # password-validator
 password validator tools for laravel
+
 ```
 composer require hshafiei374/password-validator
 ```
+- have_strength
+- have_uppercase
+- have_lowercase
+- have_number
+- have_symbol
+
+##have_strength
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -19,11 +27,11 @@ $validateInputs = $request->validate([
             'password' => 'required|confirmed|min:6|have_strength'//set on 5
         ]);
 ```
-- 1 password must at least has 6 chars
-- 2 1 and at least has one a-z chars or lowercase
-- 3 2 and at least has one A-Z       or lowercase-uppercase  
-- 4 3 and at least has one 0-9       or lowercase-uppercase-number
-- 5 4 and at least has one special chars like @ $ ! % * # ? & or lowercase-uppercase-number-symbol
+- base_rule: password must at least has {number} chars default: number=6 
+- rule 1 and at least has one a-z chars or lowercase
+- rule 2 and at least has one A-Z       or lowercase-uppercase  
+- rule 3 and at least has one 0-9       or lowercase-uppercase-number
+- rule 4 and at least has one special chars like @ $ ! % * # ? & or lowercase-uppercase-number-symbol
 
 by default password length is 6 but you can change it.
 ```
@@ -44,7 +52,7 @@ $validateInputs = $request->validate([
         ]);
 ```
 
-if you want use only special characters or only uppercase
+###if you want use only special characters or only uppercase ...
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -60,7 +68,8 @@ $validateInputs = $request->validate([
         ]);
 ```
 
-you can use each rule separately:
+###you can use each rule separately:
+##have_number
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -68,6 +77,7 @@ $validateInputs = $request->validate([
             'password' => 'required|confirmed|min:6|have_number:3'//password must have 3 numeric characters
         ]);
 ```
+##have_symbol
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -75,6 +85,7 @@ $validateInputs = $request->validate([
             'password' => 'required|confirmed|min:6|have_symbol'//password must have 1 special character
         ]);
 ```
+##have_uppercase
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -82,6 +93,7 @@ $validateInputs = $request->validate([
             'password' => 'required|confirmed|min:6|have_uppercase'//password must have 1 uppercase character
         ]);
 ```
+##have_lowercase
 ```
 $validateInputs = $request->validate([
             'email' => 'required|email|unique:users,email',
