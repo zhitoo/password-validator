@@ -17,22 +17,22 @@ class PasswordValidator extends Validator
 
     public function validateHaveNumber($attribute, $value, $parameters, $validator)
     {
-        return $this->checkExistsNumbers($value)>($parameters[0]??1);
+        return $this->checkExistsNumbers($value) > ($parameters[0] ?? 1);
     }
 
     public function validateHaveUppercase($attribute, $value, $parameters, $validator)
     {
-        return $this->checkExistsUppercaseLetters($value)>($parameters[0]??1);
+        return $this->checkExistsUppercaseLetters($value) > ($parameters[0] ?? 1);
     }
 
     public function validateHaveLowercase($attribute, $value, $parameters, $validator)
     {
-        return $this->checkExistsLowercaseLetters($value)>($parameters[0]??1);
+        return $this->checkExistsLowercaseLetters($value) > ($parameters[0] ?? 1);
     }
 
     public function validateHaveSymbol($attribute, $value, $parameters, $validator)
     {
-        return $this->checkExistsSpecialCharacters($value)>($parameters[0]??1);
+        return $this->checkExistsSpecialCharacters($value) > ($parameters[0] ?? 1);
     }
 
     /**
@@ -74,29 +74,31 @@ class PasswordValidator extends Validator
 
         //length is base validation and check always
         $result = $this->checkLength($value);
-        $this->createMessage($result, ' have ' . $this->passwordLength . ' characters at least', '');
+        $this->createMessage($result, trans('password_validator::password_validator.have_n_characters_at_least', [
+            'n' => $this->passwordLength
+        ]), '');
         if (in_array('uppercase', $parts)) {
             $uppercaseResult = $this->checkExistsUppercaseLetters($value) > 0;
-            $this->createMessage($uppercaseResult, '  one A-Z characters');
+            $this->createMessage($uppercaseResult, trans('password_validator::password_validator.one_A-Z_characters'));
             $result = $result && $uppercaseResult;
         }
         if (in_array('lowercase', $parts)) {
             $lowercaseResult = $this->checkExistsLowercaseLetters($value) > 0;
-            $this->createMessage($lowercaseResult, '  one a-z characters');
+            $this->createMessage($lowercaseResult, trans('password_validator::password_validator.one_a-z_characters'));
             $result = $result && $lowercaseResult;
         }
         if (in_array('number', $parts)) {
             $numberResult = $this->checkExistsNumbers($value) > 0;
-            $this->createMessage($numberResult, '  one 0-9 characters');
+            $this->createMessage($numberResult, trans('password_validator::password_validator.one_0-9_characters'));
             $result = $result && $numberResult;
         }
         if (in_array('symbol', $parts)) {
             $symbolResult = $this->checkExistsSpecialCharacters($value) > 0;
-            $this->createMessage($symbolResult, '  one special characters exp: @$!%*#?&');
+            $this->createMessage($symbolResult, trans('password_validator::password_validator.one_special_characters'));
             $result = $result && $symbolResult;
         }
 
-        $validationMessages['have_strength'] = 'password must: ' . $this->password_strength_message;
+        $validationMessages['have_strength'] = trans('password_validator::password_validator.password_must') . $this->password_strength_message;
         $this->setCustomMessages($validationMessages);
         return $result;
 
@@ -104,6 +106,9 @@ class PasswordValidator extends Validator
 
     private function createMessage($result, string $message, string $prefix = ' have at least'): void
     {
+        if ($prefix == ' have at least') {
+            $prefix = trans('password_validator::password_validator.have_at_least');
+        }
         if (!$result) {
             if (empty($this->password_strength_message)) $this->password_strength_message .= $prefix;
             $this->password_strength_message .= $message;

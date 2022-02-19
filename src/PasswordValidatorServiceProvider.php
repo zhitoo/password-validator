@@ -19,6 +19,12 @@ class PasswordValidatorServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'password_validator');
+        if (app()->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../lang' => $this->app->langPath('vendor/password_validator'),
+            ]);
+        }
         Validator::resolver(function ($translator, $data, $rules, $messages = [], $customAttributes = []) {
             return new PasswordValidator($translator, $data, $rules, $messages, $customAttributes);
         });
