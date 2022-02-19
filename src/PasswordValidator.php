@@ -53,7 +53,7 @@ class PasswordValidator extends Validator
 
         //length is base validation and check always
         $result = $this->checkLength($value);
-        $this->createMessage($result, ' have 8 characters at least', '');
+        $this->createMessage($result, ' have '.$this->passwordLength.' characters at least', '');
         if (in_array('uppercase', $parts)) {
             $uppercaseResult = $this->checkExistsUppercaseLetters($value);
             $this->createMessage($uppercaseResult, '  one A-Z characters');
